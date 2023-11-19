@@ -17,18 +17,21 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 const texts = new Set();
+
 export function getTexts() {
     return texts;
 }
-chrome.contextMenus.onClicked.addListener(async (item) => {
-        console.log("Clicked context menu");
-        // get text
-        let text = item.selectionText;
-        // do something with the text
-        console.log("Selected text: \"" + text + "\"");
-        texts.add(text);
-        console.log("Added \"" + text + "\"");
-        console.log(texts)
 
-    }
-);
+chrome.contextMenus.onClicked.addListener(async (item) => {
+    console.log("Clicked context menu");
+    // get text
+    let text = item.selectionText;
+    // do something with the text
+    console.log("Selected text: \"" + text + "\"");
+    texts.add(text);
+
+    // Save the updated set to chrome.storage.sync
+    chrome.storage.sync.set({ texts: Array.from(texts) }, () => {
+        console.log("Texts saved to storage:", Array.from(texts));
+    });
+});
