@@ -1,13 +1,9 @@
 import React from 'react';
 import './App.css';
-import textbox from './textbox';
+import textbox from './components/textbox';
 
 function App() {
-    return (
-        <div className="App">
-            { textbox() }
-        </div>
-    );
+    return <div className="App">{textbox()}</div>;
 }
 
 export default App;
