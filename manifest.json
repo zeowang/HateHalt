@@ -2,12 +2,13 @@
     "name": "HateHalt",
     "description": "A chrome extension to scan for hate speech",
     "version": "0.1",
-    "permissions": ["contextMenus"],
+    "permissions": ["contextMenus", "storage"],
     "background": {
-      "service_worker": "backend/background.js"
-    },
-    "manifest_version": 3,
+        "service_worker": "backend/scripts/background.js",
+        "type": "module"
+      },
     "action": {
-        "default_popup": "popup.html"
-      }
+        "default_popup": "backend/scripts/popup.html"
+    },
+    "manifest_version": 3
   }

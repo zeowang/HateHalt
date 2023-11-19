@@ -16,11 +16,19 @@ chrome.runtime.onInstalled.addListener(async () => {
       });
 });
 
+const texts = new Set();
+export function getTexts() {
+    return texts;
+}
 chrome.contextMenus.onClicked.addListener(async (item) => {
         console.log("Clicked context menu");
         // get text
-        text = item.selectionText;
+        let text = item.selectionText;
         // do something with the text
-        console.log("Selected text:", text);
+        console.log("Selected text: \"" + text + "\"");
+        texts.add(text);
+        console.log("Added \"" + text + "\"");
+        console.log(texts)
+
     }
 );
