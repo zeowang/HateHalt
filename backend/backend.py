@@ -1,6 +1,13 @@
 from flask import Flask
 from flask import Blueprint, request, jsonify
-from Learning import predict, load_model
+from Learning import predict, load_model, label_map
+
+from dotenv import load_dotenv
+import os
+
+
+# Load environment variables from .env
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -12,10 +19,14 @@ def api_detect():
     # print("Hello World")
 
     strings = data['strings']
-    result = predict(strings, model)
-
+    print(strings)
+    labels, prob = predict(strings, model)
+    labels = [label_map[label] for label in labels]
     
-    return result
+    response = jsonify(labels=labels, prob=prob.tolist())
+    
+    return response
+
 
 if __name__ == '__main__':
-    app.run(debug=True, host='localhost', port='5000')
+    app.run(debug=True, host=os.getenv('HOST'), port=os.getenv('PORT'))

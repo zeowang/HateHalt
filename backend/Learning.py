@@ -1,4 +1,4 @@
-from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import AdaBoostClassifier, VotingClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
@@ -7,66 +7,44 @@ from sklearn.metrics import accuracy_score, classification_report
 import re
 import pandas as pd
 import pickle
+import numpy as np
+
+
+label_map = ['hate_speech', 'offensive_language', 'neither']
+
+def combine_data():
+    X1, y1 = load_data()
+    X2, y2 = load_dgh()
+
+    # Combine data using numpy.concatenate
+    X = np.concatenate([X1, X2])
+    y = np.concatenate([y1, y2])
+
+    # Save X and y to CSV
+    df = pd.DataFrame({'X': X, 'y': y})
+    df.to_csv('backend/data/combined.csv', index=False)
 
 
 
-# class NaiveBayes:
 
-#     def __init__(self, beta, num_classes):
-#         self.beta= beta 
-#         self.clf = MultinomialNB(alpha=beta)
-#         self.vectorizer = CountVectorizer()
-#         self.num_classes = num_classes
+def load_dgh():
+    df = pd.read_csv('backend/data/dgh.csv')
 
-
-    
-    
-#     def fit(self, X, y):
-#         # fit the model
-#         self.clf.fit(X, y)
-#         return self.clf
-
-        
-
-
-#     def predict(self, X, y):
-#         self.clf.predict(X)
-    
+    # Remove missing values
+    df = df.dropna()
 
 
 
-    
+    X, y = df['text'].values, df['label'].values
 
-# class NaiveBayesNgrams(NaiveBayes):
-#     def __init__(self, num_classes, ngram_range=(1, 1), beta=0):
-#         super().__init__(num_classes, beta)
-#         self.vectorizer = CountVectorizer(ngram_range=ngram_range)
-#         self.clf = MultinomialNB(alpha=beta)
-    
-#     def fit(self, X, y):
-#         X, y = self.preprocess(X, y)
-        
-#         super().fit(X, y)
-#         return self.clf
+    # if label is `hate` set to 1, if not then set of 0
+    y = [1 if label == 'hate' else 0 for label in y]
+
+    X = clean_strings(X)
+
+    return X, y
 
 
-#     def predict(self, X, y):
-#         X, y = self.preprocess(X, y)
-#         y_pred = self.clf.predict(X)
-#         return y_pred
-
-#     def preprocess(self, X, y):
-#         # input X is a list of strings
-
-#         # clean strings remove all non-alphanumeric characters and replace with a ""
-#         X = X.str.replace('[^a-zA-Z0-9]', ' ')
-
-#         # Convert the text to lowercase
-#         X = X.str.lower()
-
-#         # make the data to be n-grams
-#         X = self.vectorizer.fit_transform(X)
-#         return X, y
 
 def clean_strings(strings):
     regex = re.compile('[^a-z ]')  # Updated regex to include '#' and '@'
@@ -91,7 +69,6 @@ def clean_strings(strings):
 
 def load_data():
     df = pd.read_csv('backend/data/labeled_data.csv')
-    df = df[['tweet', 'class']]
 
     # Remove missing values
     df = df.dropna()
@@ -100,22 +77,21 @@ def load_data():
     df = df.drop_duplicates()
 
     # make sure the percentage of each class is the same
-    df = df.groupby('class').head(2000)
+    df = df.groupby('class').head(3000)
 
     X, y = df['tweet'].values, df['class'].values
     
     X = clean_strings(X)
-        
+
+    # # if class is 0 or 1 set to 1, if class is 2 set to 0
+    # y = [1 if label == 0 or label == 1 else 0 for label in y]
 
     return X, y
 
 
-
-
-
 def fit(X, y):
     # Load the dataset
-    laplace = 0.1
+    laplace = 1
     texts = X
     labels = y
     X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.25, random_state=42)
@@ -123,21 +99,22 @@ def fit(X, y):
 
 
     # Define n-gram ranges
-    ngram_ranges = [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5)]
+    ngram_ranges = [(4, 5), (3, 4), (2, 3), (1, 2), (1, 1)]
 
     # Initialize individual classifiers
     classifiers = []
     for ngram_range in ngram_ranges:
-        clf = Pipeline([
+        base_classifier = Pipeline([
             ('vectorizer', CountVectorizer(ngram_range=ngram_range)),
             ('classifier', MultinomialNB(alpha=laplace))
         ])
-        classifiers.append(('clf_{}'.format(str(ngram_range)), clf))
+
+        classifiers.append(('clf_{}'.format(str(ngram_range)), base_classifier))
 
     # Create the ensemble model using VotingClassifier
-    ensemble_classifier = VotingClassifier(classifiers, voting='hard')
+    ensemble_classifier = VotingClassifier(classifiers, voting='soft')
 
-    # Train the ensemble model
+
     ensemble_classifier.fit(X_train, y_train)
 
     # Evaluate on the test set
@@ -149,39 +126,40 @@ def fit(X, y):
 
 
 
-    # # save X_test and y_pred y_test to csv
-    # df = pd.DataFrame({'X_test': X_test, 'y_pred': y_pred, 'y_test': y_test})
-    # df.to_csv('backend/data/predictions.csv', index=False)
+    # save X_test and y_pred y_test to csv
+    df = pd.DataFrame({'X_test': X_test, 'y_pred': y_pred, 'y_test': y_test})
+    df.to_csv('backend/data/predictions.csv', index=False)
 
-    # # save the model to disk
-    # filename = 'finalized_model.sav'
-    # pickle.dump(ensemble_classifier, open(filename, 'wb'))
+    # save the model to disk
+    filename = 'backend/model/finalized_model.sav'
+    pickle.dump(ensemble_classifier, open(filename, 'wb'))
     return ensemble_classifier
 
 
 def load_model():
     # load the model from disk
-    filename = 'finalized_model.sav'
+    filename = 'backend/model/finalized_model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     return loaded_model
 
 def predict(strings, loaded_model):
     # clean strings remove all non-alphanumeric characters and replace with a ""
     strings = clean_strings(strings)
-    result = loaded_model.predict(strings)
-    return result
+    labels = loaded_model.predict(strings)
+    prob = loaded_model.predict_proba(strings)
+    return labels, prob
 
 
 if(__name__ == "__main__"):
     X, y = load_data()
+
     fit(X, y)
 
-    strings = ["I wish you die", "He's a great guy but his teaching style isnt great. He offers no good material that helps with labs, which are so time consuming and take dozens of hours to finish. Exams were ok but the labs really makes you wish you were studying Computer Science instead of Computer Engineering because it is worse than TORture (pun intended, if you know you know)", "I am sad", "very bad very bad very bad very bad very bad very bad very bad very bad very bad very bad"]
+    strings = ["I wish you die", "I love eating", "I am sad", "very bad very bad very bad very bad very bad very bad very bad very bad very bad very bad"]
 
     model = load_model()
     result = predict(strings, model)
-    print(result)   
-
+    print(result) 
 
     
 
