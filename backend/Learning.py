@@ -68,6 +68,26 @@ import pickle
 #         X = self.vectorizer.fit_transform(X)
 #         return X, y
 
+def clean_strings(strings):
+    regex = re.compile('[^a-z ]')  # Updated regex to include '#' and '@'
+    for i in range(len(strings)):
+        s = strings[i]
+        s = s.lower()
+        # remove all links
+        s = re.sub(r"http\S+", "", s)
+        # remove all mentions
+        s = re.sub(r'@\S+', '', s)
+        # remove all hashtags
+        s = re.sub(r'#\S+', '', s)
+        
+
+        s = regex.sub('', s)
+        s = re.sub(r'\s+', ' ', s).strip()
+        # remove all leading and trailing space
+        strings[i] = s
+
+    return strings
+
 
 def load_data():
     df = pd.read_csv('backend/data/labeled_data.csv')
@@ -83,23 +103,9 @@ def load_data():
     df = df.groupby('class').head(2000)
 
     X, y = df['tweet'].values, df['class'].values
-
-    regex = re.compile('[^a-z ]')  # Updated regex to include '#' and '@'
-
-    # 
-    for i in range(len(X)):
-        X[i] = X[i].lower()
-        # remove all links
-        X[i] = re.sub(r"http\S+", "", X[i])
-        # remove all mentions
-        X[i] = re.sub(r'@\S+', '', X[i])
-        # remove all hashtags
-        X[i] = re.sub(r'#\S+', '', X[i])
+    
+    X = clean_strings(X)
         
-
-        X[i] = regex.sub('', X[i])
-        X[i] = re.sub(r'\s+', ' ', X[i]).strip()
-        # remove all leading and trailing space
 
     return X, y
 
@@ -109,33 +115,29 @@ def load_data():
 
 def fit(X, y):
     # Load the dataset
-
+    laplace = 0.1
     texts = X
     labels = y
     X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.25, random_state=42)
 
+
+
     # Define n-gram ranges
-    ngram_ranges = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+    ngram_ranges = [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5)]
 
     # Initialize individual classifiers
     classifiers = []
     for ngram_range in ngram_ranges:
         clf = Pipeline([
             ('vectorizer', CountVectorizer(ngram_range=ngram_range)),
-            ('classifier', MultinomialNB())
+            ('classifier', MultinomialNB(alpha=laplace))
         ])
         classifiers.append(('clf_{}'.format(str(ngram_range)), clf))
 
     # Create the ensemble model using VotingClassifier
-    ensemble_classifier = VotingClassifier(classifiers, voting='soft')
+    ensemble_classifier = VotingClassifier(classifiers, voting='hard')
 
     # Train the ensemble model
-    ensemble_classifier.fit(X_train, y_train)
-
-    # Initialize voting classifier
-    ensemble_classifier = VotingClassifier(classifiers, voting='soft')
-
-    # Train the voting classifier
     ensemble_classifier.fit(X_train, y_train)
 
     # Evaluate on the test set
@@ -145,13 +147,16 @@ def fit(X, y):
     accuracy = accuracy_score(y_test, y_pred)
     print('Accuracy: {:.4f}'.format(accuracy))
 
-    # save X_test and y_pred y_test to csv
-    df = pd.DataFrame({'X_test': X_test, 'y_pred': y_pred, 'y_test': y_test})
-    df.to_csv('backend/data/predictions.csv', index=False)
 
-    # save the model to disk
-    filename = 'finalized_model.sav'
-    pickle.dump(ensemble_classifier, open(filename, 'wb'))
+
+    # # save X_test and y_pred y_test to csv
+    # df = pd.DataFrame({'X_test': X_test, 'y_pred': y_pred, 'y_test': y_test})
+    # df.to_csv('backend/data/predictions.csv', index=False)
+
+    # # save the model to disk
+    # filename = 'finalized_model.sav'
+    # pickle.dump(ensemble_classifier, open(filename, 'wb'))
+    return ensemble_classifier
 
 
 def load_model():
@@ -160,10 +165,9 @@ def load_model():
     loaded_model = pickle.load(open(filename, 'rb'))
     return loaded_model
 
-def predict(strings):
-    # load the model from disk
-    filename = 'finalized_model.sav'
-    loaded_model = pickle.load(open(filename, 'rb'))
+def predict(strings, loaded_model):
+    # clean strings remove all non-alphanumeric characters and replace with a ""
+    strings = clean_strings(strings)
     result = loaded_model.predict(strings)
     return result
 
@@ -172,9 +176,10 @@ if(__name__ == "__main__"):
     X, y = load_data()
     fit(X, y)
 
-    strings = ["I love you", "I hate you", "I am sad", "I am happy"]
+    strings = ["I wish you die", "He's a great guy but his teaching style isnt great. He offers no good material that helps with labs, which are so time consuming and take dozens of hours to finish. Exams were ok but the labs really makes you wish you were studying Computer Science instead of Computer Engineering because it is worse than TORture (pun intended, if you know you know)", "I am sad", "very bad very bad very bad very bad very bad very bad very bad very bad very bad very bad"]
 
-    result = predict(strings)
+    model = load_model()
+    result = predict(strings, model)
     print(result)   
 
 
