@@ -8,7 +8,9 @@ import re
 import pandas as pd
 import pickle
 import numpy as np
+import os
 
+base_dir = os.path.dirname(__file__)
 
 label_map = ['hate_speech', 'offensive_language', 'neither']
 
@@ -22,13 +24,13 @@ def combine_data():
 
     # Save X and y to CSV
     df = pd.DataFrame({'X': X, 'y': y})
-    df.to_csv('backend/data/combined.csv', index=False)
+    df.to_csv(base_dir + '\\data\\combined.csv', index=False)
 
 
 
 
 def load_dgh():
-    df = pd.read_csv('backend/data/dgh.csv')
+    df = pd.read_csv(base_dir + '\\data\\dgh.csv')
 
     # Remove missing values
     df = df.dropna()
@@ -68,7 +70,7 @@ def clean_strings(strings):
 
 
 def load_data():
-    df = pd.read_csv('backend/data/labeled_data.csv')
+    df = pd.read_csv(base_dir +'\\data\\labeled_data.csv')
 
     # Remove missing values
     df = df.dropna()
@@ -128,18 +130,19 @@ def fit(X, y):
 
     # save X_test and y_pred y_test to csv
     df = pd.DataFrame({'X_test': X_test, 'y_pred': y_pred, 'y_test': y_test})
-    df.to_csv('backend/data/predictions.csv', index=False)
+    df.to_csv(base_dir + '\\data\\predictions.csv', index=False)
 
     # save the model to disk
-    filename = 'backend/model/finalized_model.sav'
+    filename = base_dir + '\\model\\finalized_model.sav'
     pickle.dump(ensemble_classifier, open(filename, 'wb'))
     return ensemble_classifier
 
 
 def load_model():
     # load the model from disk
-    filename = 'backend/model/finalized_model.sav'
-    loaded_model = pickle.load(open(filename, 'rb'))
+    relative_path = base_dir + '\\model\\finalized_model.sav'
+    
+    loaded_model = pickle.load(open(relative_path, 'rb'))
     return loaded_model
 
 def predict(strings, loaded_model):
