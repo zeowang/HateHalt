@@ -13,6 +13,10 @@ const textbox = () => {
         sendRequest(inputValue)
             .then((result) => {
                 setResult(result);
+                setTimeout(() => {
+                    setResult(null);
+                    console.log('After 4.5 seconds');
+                }, 4500);
             })
             .catch((err) => {
                 setResult(err.message);
@@ -25,7 +29,7 @@ const textbox = () => {
             <button onClick={click}>submit</button>
             {result && (
                 <div>
-                    <p> Reported Intention: {result}</p>
+                    <p> Reported Intention: {result.replace(/_/g, ' ')}</p>
                 </div>
             )}
         </div>
