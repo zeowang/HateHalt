@@ -62,3 +62,33 @@ const fetch_label = async (string) => {
 
   return data;
 };
+
+document.getElementById("openReactPage").addEventListener("click", function () {
+  const indexHtmlURL = chrome.runtime.getURL("../frontend/build/index.html");
+
+  // Get the base URL (directory) of the index.html file
+  const baseUrl = indexHtmlURL.substring(
+    0,
+    indexHtmlURL.lastIndexOf("/frontend/build") + 1
+  );
+
+  // Specify the relative paths of your static files
+  const staticFiles = [
+    "static/css/main.css",
+    "static/js/main.27ebd520.js",
+    // Add more static files as needed
+  ];
+
+  // Create an array of URLs for the static files
+  const staticFileURLs = staticFiles.map((file) => `${baseUrl}${file}`);
+
+  // Open a new tab with the index.html and static files
+  chrome.tabs.create({ url: indexHtmlURL });
+
+  // staticFiles.forEach((file) => {
+  //   const staticFileURL = `${baseUrl}${file}`;
+  //   chrome.tabs.create({ url: staticFileURL });
+  // });
+
+
+});
