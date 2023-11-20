@@ -50,8 +50,10 @@
     color: black;
 }
 
-.App-link {
-    color: #61dafb;
+.topRightImage {
+    position: fixed; /* Fixed position so it stays in place */
+    top: 1cm; /* Position at the top of the page */
+    right: 1cm; /* Position at the right of the page */
 }
 
 @keyframes App-logo-spin {
