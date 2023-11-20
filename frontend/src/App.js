@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import textbox from './components/textbox';
+import Textbox from './components/textbox';
 import logo from './logo.svg';
 import nw from './nwPlus_Logo.svg';
 
