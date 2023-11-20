@@ -1,0 +1,41 @@
+.Textbox .input-box {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 0 10px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    margin-top: 3rem;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.Textbox .input-box:focus {
+    border-color: #61dafb;
+}
+
+.Textbox .input-button{
+  background-color: #c1d0d8; /* Set your desired background color  */
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  outline: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.Textbox .input-button:hover{
+  background-color: #5fbfda; /* Set your desired hover background color  */
+}
+
+
+

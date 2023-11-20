@@ -12,7 +12,7 @@ import os
 
 base_dir = os.path.dirname(__file__)
 
-label_map = ['hate_speech', 'offensive_language', 'neither']
+label_map = ['hate_speech', 'offensive_language', 'good']
 
 def combine_data():
     X1, y1 = load_data()
@@ -96,12 +96,12 @@ def fit(X, y):
     laplace = 1
     texts = X
     labels = y
-    X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.25, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.10, random_state=42)
 
 
 
     # Define n-gram ranges
-    ngram_ranges = [(4, 5), (3, 4), (2, 3), (1, 2), (1, 1)]
+    ngram_ranges = [(4, 5), (3, 4), (2, 3), (1, 2), (1, 1), (3,6)]
 
     # Initialize individual classifiers
     classifiers = []

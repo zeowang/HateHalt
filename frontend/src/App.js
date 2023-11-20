@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-import textbox from './components/textbox';
-import logo from './logo.svg';
+import Textbox from './components/textbox';
+import logo from './static/media/logo_3.png';
 
 function App() {
     return (
@@ -11,8 +11,11 @@ function App() {
             </header>
             <section className="App-center">
                 Welcome to
-                <code>HateHalt</code>a ml-based hatred semantic detector.
-                <a>{textbox()}</a>
+                <code>HateHalt</code>a ML-based hatred semantic detector.
+                <p> It will classify the text as </p>
+                <a>
+                    <Textbox></Textbox>
+                </a>
             </section>
             <section className="App-footer"></section>
         </div>
