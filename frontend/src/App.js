@@ -9,11 +9,10 @@ function App() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>
-                    Welcome to <code>HateHalt</code>, a react-based hatred semantic detector.
+                    Welcome to <code>HateHalt</code>, a react-based hatred
+                    semantic detector.
                 </p>
-                <a>
-                    {textbox()}
-                </a>
+                <a>{textbox()}</a>
             </header>
         </div>
     );
