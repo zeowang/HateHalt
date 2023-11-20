@@ -13,7 +13,7 @@ const sendRequest = async (textData) => {
         const res = await axios.post(uri, json_data);
         console.log(res);
 
-        return JSON.stringify(res.data);
+        return res.data.labels[0];
     } catch (err) {
         console.error(err);
         throw err;

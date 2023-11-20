@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import sendRequest from './request.js';
+import "./testbox.style.css"
 
-const textbox = () => {
+const Textbox = () => {
     const [inputValue, setInputValue] = useState('');
     const [result, setResult] = useState(null);
 
@@ -13,23 +14,41 @@ const textbox = () => {
         sendRequest(inputValue)
             .then((result) => {
                 setResult(result);
+                setTimeout(() => {
+                    setResult(null);
+                    console.log('After 4.5 seconds');
+                }, 4500);
             })
             .catch((err) => {
                 setResult(err.message);
             });
     };
 
+    const pressEnter = (events) => {
+        if (events.key == 'Enter') {
+            click();
+        }
+    };
+
     return (
-        <div>
-            <input type="text" value={inputValue} onChange={change} />
-            <button onClick={click}>click here</button>
+        <div className='Textbox'>
+            <input
+                type="text"
+                value={inputValue}
+                onChange={change}
+                onKeyDown={pressEnter}
+                className='input-box'
+            />
+            <button onClick={click} className='input-button'>Check</button>
             {result && (
                 <div>
-                    <p> Input Value: {result}</p>
+                    <p> 
+                    Reported Intention: {result.replace(/_/g, ' ')}
+                    </p>
                 </div>
             )}
         </div>
     );
 };
 
-export default textbox;
+export default Textbox;
