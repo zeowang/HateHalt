@@ -22,10 +22,10 @@ const textbox = () => {
     return (
         <div>
             <input type="text" value={inputValue} onChange={change} />
-            <button onClick={click}>click here</button>
+            <button onClick={click}>submit</button>
             {result && (
                 <div>
-                    <p> Input Value: {result}</p>
+                    <p> Reported Intention: {result}</p>
                 </div>
             )}
         </div>
