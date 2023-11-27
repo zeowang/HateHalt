@@ -154,6 +154,7 @@ def predict(strings, loaded_model):
 
 
 if(__name__ == "__main__"):
+    # debugging code
     X, y = load_data()
 
     fit(X, y)
