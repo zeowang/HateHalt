@@ -5,25 +5,22 @@
         <link rel="stylesheet" href="popup.css" type="text/css">
     </head>
     <body>
-        <h1>HateHalt</h1>
+        <h1 class="title">HateHalt</h1>
         <ul class="legend">
             <li>
-                <div class="legend-key-offensive">
-                    <span class="legend-label">Offensive</span>
-                </div>
+                <span class="legend-key-offensive"></span>
+                <span class="legend-label">Offensive</span>
             </li>
             <li>
-                <div class="legend-key-hate">
-                    <span class="legend-label">Hate Speech</span>
-                </div>
+                <span class="legend-key-hate"></span>
+                <span class="legend-label">Hate Speech</span>
             </li>
             <li>
-                <div class="legend-key-good">
-                    <span class="legend-label">Neither</span>
-                </div>
+                <span class="legend-key-good"></span>
+                <span class="legend-label">Neither</span>
             </li>
         </ul>
-        <p class="label">Probability</p>
+        <div class="label">Probability</div>
         <ul id="texts"></ul>
         <form id="form"></form>
         <script src="popup.js" type="module"></script>

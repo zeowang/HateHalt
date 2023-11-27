@@ -23,24 +23,26 @@ async function createForm() {
             let list = document.getElementById("texts");
             for (let i = 0; i < textsArray.length; ++i) {
                 let li = document.createElement('li');
+                li.classList.add("text-list")
     
                 // text label
                 let label = document.createElement('span')
                 label.innerText = textsArray[i]
-                li.appendChild(label);
     
                 // color code
                 let span = document.createElement('span')
                 if (textsMap[textsArray[i]].labels[0] == "hate_speech") {
                     span.classList.add("list-key-hate");
+                    label.classList.add("label-hate");
                 }
                 if (textsMap[textsArray[i]].labels[0] == "offensive_language") {
                     span.classList.add("list-key-offensive");
+                    label.classList.add("label-offensive");
                 }
                 if (textsMap[textsArray[i]].labels[0] == "good") {
                     span.classList.add("list-key-good");
+                    label.classList.add("label-good");
                 }
-                li.appendChild(span);
     
                 // probability number
                 let probability = document.createElement('span');
@@ -48,9 +50,12 @@ async function createForm() {
                 console.log("percentage", percentage);
                 probability.innerText = percentage.toString() + "%";
                 console.log("probability", probability);
+
+                li.appendChild(label);
+                li.appendChild(span);
                 li.appendChild(probability);
-    
                 list.appendChild(li);
+    
                 console.log("Added " + li.innerText + " to HTML")
             }
         } else {

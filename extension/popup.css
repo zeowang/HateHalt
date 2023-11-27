@@ -1,6 +1,8 @@
 *{
     font-family: Arial, Helvetica, sans-serif;
+    width: 300px;
 }
+
 
 .legend-key-hate, .list-key-hate {
     height: 15px;
@@ -29,15 +31,77 @@
 .list-key-hate {
     height: 20px;
     width: 20px;
+    flex-shrink: 0;
+    margin: 5px;
 }
 
 .list-key-offensive {
     height: 20px;
     width: 20px;
+    flex-shrink: 0;
+    margin: 5px;
 }
-
 
 .list-key-good {
     height: 20px;
     width: 20px;
+    flex-shrink: 0;
+    margin: 5px;
+}
+
+.legend {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    display: inline-block;
+}
+
+.label-hate {
+    margin: 5px;
+    background-color: #ff7070;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.label-offensive {
+    margin: 5px;
+    background-color: #ffe876;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.label-good {
+    margin: 5px;
+    background-color: #6dff77;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.label {
+    float: right;
+    width: 100px;
+}
+
+.texts {
+    list-style-type: none;
+    display: block;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.text-list {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.title {
+    text-align: center;
+}
+
+.legend-label {
+    margin: 0 5px;
 }
