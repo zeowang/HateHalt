@@ -16,12 +16,9 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
   });
   
-  const textsMap = new Map();
+  const textsMap = {};
   const texts = new Set();
-  
-  export function getTexts() {
-    return textsMap;
-  }
+
   
   chrome.contextMenus.onClicked.addListener(async (item) => {
     console.log("Clicked context menu");
@@ -31,7 +28,13 @@ chrome.runtime.onInstalled.addListener(async () => {
     console.log('Selected text: "' + text + '"');
     texts.add(text);
   
-    fetch_label(text);
+    await fetch_label(text);
+
+    // Save the updated set to chrome.storage.sync
+    console.log("textMap before sync", JSON.stringify(textsMap));
+    await chrome.storage.sync.set({"textsMap": JSON.stringify(textsMap)}, () => {
+      console.log("successfully set")
+    });
   });
   
   // function that query backend given the string
@@ -55,13 +58,10 @@ chrome.runtime.onInstalled.addListener(async () => {
   
     const data = await response.json();
     // Do something with the response data
+    textsMap[string] = data;
+    console.log("textsMap", textsMap);
     console.log("Response:", data);
     
-    textsMap.set(string, data);
-    // Save the updated set to chrome.storage.sync
-    chrome.storage.sync.set(textsMap, () => {
-        console.log("Texts saved to storage:", textsMap);
-      });
     return data;
   };
   
