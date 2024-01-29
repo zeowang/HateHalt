@@ -17,7 +17,6 @@ model = load_model()
 @app.route('/api/detect', methods=['POST'])
 def api_detect():
     data = request.get_json()
-    # print("Hello World")
 
     print(data)
     strings = data['strings']
